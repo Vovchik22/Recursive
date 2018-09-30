@@ -1,4 +1,4 @@
-pragma solidity ^0.4.11;
+pragma solidity ^0.4.18;
 
 
 /**
@@ -111,11 +111,11 @@ contract PoSTokenStandard {
 }
 
 
-contract PoSToken is ERC20,PoSTokenStandard,Ownable {
+contract Recursive is ERC20,PoSTokenStandard,Ownable {
     using SafeMath for uint256;
 
-    string public name = "PoSToken";
-    string public symbol = "POS";
+    string public name = "Recursive";
+    string public symbol = "RCR";
     uint public decimals = 18;
 
     uint public chainStartTime; //chain start time
@@ -153,7 +153,7 @@ contract PoSToken is ERC20,PoSTokenStandard,Ownable {
         _;
     }
 
-    function PoSToken() {
+    constructor() {
         maxTotalSupply = 10**25; // 10 Mil.
         totalInitialSupply = 10**24; // 1 Mil.
 

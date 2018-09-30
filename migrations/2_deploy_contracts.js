@@ -1,5 +1,5 @@
-var PoSToken = artifacts.require("./PoSToken.sol");
+var Recursive = artifacts.require("./Recursive.sol");
 
 module.exports = function(deployer) {
-    deployer.deploy(PoSToken);
+    deployer.deploy(Recursive);
 };
