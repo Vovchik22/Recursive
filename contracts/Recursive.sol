@@ -154,8 +154,8 @@ contract Recursive is ERC20,PoSTokenStandard,Ownable {
     }
 
     constructor() {
-        maxTotalSupply = 10**25; // 10 Mil.
-        totalInitialSupply = 10**24; // 1 Mil.
+        maxTotalSupply = 10**26; // 100 Mil.
+        totalInitialSupply = 10**23; // 100 K
 
         chainStartTime = now;
         chainStartBlockNumber = block.number;
