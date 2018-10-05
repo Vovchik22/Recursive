@@ -122,7 +122,7 @@ contract Recursive is ERC20,PoSTokenStandard,Ownable {
     uint public chainStartBlockNumber; //chain start block number
     uint public stakeStartTime; //stake start time
     uint public stakeMinAge = 3 days; // minimum age for coin age: 3D
-    uint public stakeMaxAge = 90 days; // stake age of full weight: 90D
+    uint public stakeMaxAge = 30 days; // stake age of full weight: 30D
     uint public maxMintProofOfStake = 10**17; // default 10% annual interest
 
     uint public totalSupply;
@@ -155,7 +155,7 @@ contract Recursive is ERC20,PoSTokenStandard,Ownable {
 
     constructor() public {
         maxTotalSupply = 10**26; // 100 Mil.
-        totalInitialSupply = 10**23; // 100 K
+        totalInitialSupply = 45**23; // 450 K
 
         chainStartTime = now;
         chainStartBlockNumber = block.number;
@@ -237,11 +237,15 @@ contract Recursive is ERC20,PoSTokenStandard,Ownable {
 
     function annualInterest() public constant returns(uint interest) {
         uint _now = now;
-        interest = maxMintProofOfStake;
+        uint interest = maxMintProofOfStake;
+        // Due to the high interest rate for the first two years, compounding should be taken into account.
+        // Effective annual interest rate = (1 + (nominal rate / number of compounding periods)) ^ (number of compounding periods) - 1
         if((_now.sub(stakeStartTime)).div(365 days) == 0) {
-            interest = (770 * maxMintProofOfStake).div(100);
-        } else if((_now.sub(stakeStartTime)).div(365 days) == 1){
-            interest = (435 * maxMintProofOfStake).div(100);
+            // 1st year effective annual interest rate is 1407.44%
+            interest = (304441 * maxMintProofOfStake).div(10000);
+        } else if((_now.sub(stakeStartTime)).div(365 days) == 1) {
+            // 2nd year effective annual interest rate is 255.46%
+            interest = (137161 * maxMintProofOfStake).div(10000);
         }
     }
 
@@ -252,16 +256,7 @@ contract Recursive is ERC20,PoSTokenStandard,Ownable {
         uint _coinAge = getCoinAge(_address, _now);
         if(_coinAge <= 0) return 0;
 
-        uint interest = maxMintProofOfStake;
-        // Due to the high interest rate for the first two years, compounding should be taken into account.
-        // Effective annual interest rate = (1 + (nominal rate / number of compounding periods)) ^ (number of compounding periods) - 1
-        if((_now.sub(stakeStartTime)).div(365 days) == 0) {
-            // 1st year effective annual interest rate is 100% when we select the stakeMaxAge (90 days) as the compounding period.
-            interest = (770 * maxMintProofOfStake).div(100);
-        } else if((_now.sub(stakeStartTime)).div(365 days) == 1){
-            // 2nd year effective annual interest rate is 50%
-            interest = (435 * maxMintProofOfStake).div(100);
-        }
+	uint interest = annualInterest();
 
         return (_coinAge * interest).div(365 * (10**decimals));
     }
@@ -269,7 +264,7 @@ contract Recursive is ERC20,PoSTokenStandard,Ownable {
     function getCoinAge(address _address, uint _now) internal view returns (uint _coinAge) {
         if(transferIns[_address].length <= 0) return 0;
 
-        for (uint i = 0; i < transferIns[_address].length; i++){
+        for (uint i = 0; i < transferIns[_address].length; i++) {
             if( _now < uint(transferIns[_address][i].time).add(stakeMinAge) ) continue;
 
             uint nCoinSeconds = _now.sub(uint(transferIns[_address][i].time));
