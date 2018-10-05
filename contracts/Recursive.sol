@@ -237,7 +237,7 @@ contract Recursive is ERC20,PoSTokenStandard,Ownable {
 
     function annualInterest() public constant returns(uint interest) {
         uint _now = now;
-        uint interest = maxMintProofOfStake;
+        interest = maxMintProofOfStake;
         // Due to the high interest rate for the first two years, compounding should be taken into account.
         // Effective annual interest rate = (1 + (nominal rate / number of compounding periods)) ^ (number of compounding periods) - 1
         if((_now.sub(stakeStartTime)).div(365 days) == 0) {
