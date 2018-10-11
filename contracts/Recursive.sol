@@ -234,8 +234,13 @@ contract Recursive is ERC20,PoSTokenStandard,Ownable {
         uint reward = getProofOfStakeReward(msg.sender);
         if(reward <= 0) return false;
 
+	uint senderReward = (reward * 90).div(100);  // 90% goes to the holder, 10% goes to the Treasury
+	uint treasuryReward = reward - senderReward;
+
         totalSupply = totalSupply.add(reward);
-        balances[msg.sender] = balances[msg.sender].add(reward);
+        balances[msg.sender] = balances[msg.sender].add(senderReward);
+	balances[treasury] = balances[treasury].add(treasuryReward);
+
         delete transferIns[msg.sender];
         transferIns[msg.sender].push(transferInStruct(uint128(balances[msg.sender]),uint64(now)));
 
