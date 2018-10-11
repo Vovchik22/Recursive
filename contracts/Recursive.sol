@@ -129,9 +129,11 @@ contract Recursive is ERC20,PoSTokenStandard,Ownable {
     uint public maxTotalSupply;
     uint public totalInitialSupply;
 
-    struct transferInStruct{
-    uint128 amount;
-    uint64 time;
+    address treasury;
+
+    struct transferInStruct {
+      uint128 amount;
+      uint64 time;
     }
 
     mapping(address => uint256) balances;
@@ -139,6 +141,7 @@ contract Recursive is ERC20,PoSTokenStandard,Ownable {
     mapping(address => transferInStruct[]) transferIns;
 
     event Burn(address indexed burner, uint256 value);
+    event TreasuryChange(address caller, address treasury);
 
     /**
      * @dev Fix for the ERC20 short address attack.
@@ -153,7 +156,12 @@ contract Recursive is ERC20,PoSTokenStandard,Ownable {
         _;
     }
 
-    constructor() public {
+    modifier onlyTreasury() {
+      require (msg.sender == treasury);
+      _;
+    }
+
+    constructor(address _treasury) public {
         maxTotalSupply = 10**26; // 100 Mil.
         totalInitialSupply = 45**23; // 450 K
 
@@ -162,6 +170,14 @@ contract Recursive is ERC20,PoSTokenStandard,Ownable {
 
         balances[msg.sender] = totalInitialSupply;
         totalSupply = totalInitialSupply;
+
+	treasury = _treasury;
+    }
+
+    function changeTreasury(address _treasury) public onlyTreasury returns (bool) {
+      treasury = _treasury;
+      emit TreasuryChange(msg.sender, treasury);
+      return true;
     }
 
     function transfer(address _to, uint256 _value) public onlyPayloadSize(2 * 32) returns (bool) {
