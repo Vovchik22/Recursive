@@ -114,8 +114,8 @@ contract PoSTokenStandard {
 contract Recursive is ERC20,PoSTokenStandard,Ownable {
     using SafeMath for uint256;
 
-    string public name = "Recursive";
-    string public symbol = "RCR";
+    string public name = "RecursiveOne";
+    string public symbol = "RC1";
     uint public decimals = 18;
 
     uint public chainStartTime; //chain start time
